@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RENXT Constiuent Preview</string>
+    <string name="constit_record_text">Loading...</string>
+    <string name="login_button">Login</string>
+    <string name="constit_record_button">Open Constituent Record</string>
+    <string name="title_activity_login">Login</string>
+</resources>
