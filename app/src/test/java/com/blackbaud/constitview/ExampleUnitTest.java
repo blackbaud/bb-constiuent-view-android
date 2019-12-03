@@ -1,4 +1,4 @@
-package com.example.renxtconstiuentpreview;
+package com.blackbaud.constitview;
 
 import org.junit.Test;
 

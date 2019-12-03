@@ -1,6 +1,9 @@
-package com.example.renxtconstiuentpreview;
+package com.blackbaud.constitview;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -29,7 +32,7 @@ public class ConstitRecord extends AppCompatActivity {
 
     private String skyApiUrl = "https://api.sky.blackbaud.com/constituent/v1/constituents/280";
 
-    //TODO: Remmove subscriptionKey later
+    //TODO: Remove subscriptionKey later
     private String subscriptionKey = "f6b4ed3cc9ef41d19195cb3f7ac49b45";
 
     //TODO: Save response info to local storage and handle expired token
@@ -48,39 +51,84 @@ public class ConstitRecord extends AppCompatActivity {
     private TextView addressText = null;
     private TextView phoneText = null;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_constit_record);
 
+        // eraseCachedData();
+
         nameText = findViewById(R.id.constitNameText);
         addressText = findViewById(R.id.constitAddressText);
         phoneText = findViewById(R.id.constitPhoneText);
 
-        Intent intent = getIntent();
-        if (intent != null){
-            String action = intent.getAction();
-            if (action != null){
-                Uri data = intent.getData();
-                String response = data.toString().split("android-deeplink\\?")[1];
-                String jsonString = paramJson(response);
-                try {
-                    JSONObject json = new JSONObject(jsonString);
-                    bearerToken = "Bearer " + json.getString("access_token");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
+        bearerToken = sharedPreferences.getString("bearerToken", null);
+
+        handleIntent(getIntent());
         updateRecordImage();
         updateRecordText();
     }
 
+    // Parse the response from the auth SPA and turn it into a json style string
     public static String paramJson(String paramIn) {
         paramIn = paramIn.replaceAll("=", "\":\"");
         paramIn = paramIn.replaceAll("&", "\",\"");
         return "{\"" + paramIn + "\"}";
+    }
+
+    // Get an access token from SKY API
+    private void handleIntent(Intent intent) {
+        if (intent != null){
+            String action = intent.getAction();
+            if (action != null){
+                Uri data = intent.getData();
+                if (data != null) {
+                    String response = data.toString().split("android-deeplink\\?")[1];
+                    try {
+                        // Create a json object out of the response from the auth SPA
+                        JSONObject json = new JSONObject(paramJson(response));
+                        setCachedData(json);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    // TODO: delete this later
+    @SuppressLint("ApplySharedPref")
+    private void eraseCachedData() {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+    }
+
+    // Get, clean up, and store token info
+    @SuppressLint("ApplySharedPref")
+    private void setCachedData(JSONObject json) {
+        try {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            // Get date response into a Java parsable date string and store
+            String tokenExpiration = json.getString("expires");
+            String tokenDate = tokenExpiration.split("T")[0];
+            String tokenTime = tokenExpiration.split("T")[1];
+            String expires = tokenDate + " " + tokenTime;
+            editor.putString("expires", expires);
+
+            // Store current token
+            bearerToken = "Bearer " + json.getString("access_token");
+            editor.putString("bearerToken", bearerToken);
+
+            editor.commit();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateRecordImage() {
@@ -96,7 +144,7 @@ public class ConstitRecord extends AppCompatActivity {
 
                 try {
                     JSONObject json = new JSONObject(responseText);
-                    nameText.setText(json.getString("first") + " " + json.getString("last"));
+                    nameText.setText(json.getString("name"));
 
                     // Clickable address link that opens Google Maps
                     JSONObject address = json.getJSONObject("address");

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.renxtconstiuentpreview">
+    package="com.blackbaud.constitview">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -12,8 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="com.google.android.actions" android:resource="@xml/actions" />
+
         <activity android:name=".Login"></activity>
-        <activity android:name=".ConstitRecord">
+        <activity
+            android:name=".ConstitRecord"
+            android:autoVerify="true"
+            tools:targetApi="m">
             <tools:validation testUrl="https://host.nxt.blackbaud.com/app-redirect/redirect-stevenandroidassistant/android-deeplink" />
 
             <intent-filter>
@@ -23,22 +29,39 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="https"
                     android:host="host.nxt.blackbaud.com"
-                    android:path="/app-redirect/redirect-stevenandroidassistant/android-deeplink" />
+                    android:path="/app-redirect/redirect-stevenandroidassistant/android-deeplink"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <meta-data
-            android:name="com.google.android.actions"
-            android:resource="@xml/actions" />
+            <!-- Define your supported deeplinks -->
+            <intent-filter
+                android:autoVerify="true"
+                tools:targetApi="m">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="run-main-activity.com"
+                    android:scheme="https" />
+            </intent-filter>
+
+            <!-- Required to support search action intents from Google Search -->
+            <intent-filter>
+                <action android:name="com.google.android.gms.actions.SEARCH_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
