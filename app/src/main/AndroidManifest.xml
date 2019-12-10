@@ -13,9 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data android:name="com.google.android.actions" android:resource="@xml/actions" />
 
-        <activity android:name=".Login"></activity>
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@xml/actions" />
+
+        <activity android:name=".Login" />
         <activity
             android:name=".ConstitRecord"
             android:autoVerify="true"
@@ -39,10 +42,11 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Define your supported deeplinks -->
+            <!-- Supported deeplinks -->
             <intent-filter
                 android:autoVerify="true"
                 tools:targetApi="m">
@@ -59,6 +63,7 @@
             <!-- Required to support search action intents from Google Search -->
             <intent-filter>
                 <action android:name="com.google.android.gms.actions.SEARCH_ACTION" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

@@ -32,7 +32,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/blackbaud_sans_light"
                 android:text="                          "
-                android:textSize="26sp"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
@@ -59,9 +59,10 @@
                 android:clickable="true"
                 android:fontFamily="@font/blackbaud_sans_regular"
                 android:text="                          "
+                android:textAlignment="viewStart"
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.171"
+                app:layout_constraintHorizontal_bias="0.459"
                 app:layout_constraintStart_toEndOf="@+id/mapIcon"
                 app:layout_constraintTop_toBottomOf="@+id/constitNameText" />
 
@@ -82,13 +83,14 @@
 
             <info.androidhive.fontawesome.FontTextView
                 android:id="@+id/mapIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
                 android:width="25sp"
                 android:height="25sp"
                 android:text="@string/fa_map_marker_alt_solid"
+                android:textAlignment="center"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
@@ -97,18 +99,19 @@
 
             <info.androidhive.fontawesome.FontTextView
                 android:id="@+id/phoneIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="33dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:width="25sp"
                 android:height="25sp"
                 android:text="@string/fa_phone_solid"
+                android:textAlignment="center"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toBottomOf="@+id/mapIcon"
-                app:solid_icon="true" />
+                app:solid_icon="true" />z
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

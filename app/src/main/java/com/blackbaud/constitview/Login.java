@@ -50,6 +50,9 @@ public class Login extends AppCompatActivity {
                 Date tokenDate = tokenDateFormatter.parse(expireDateTime);
                 Date now = new Date();
                 if (tokenDate != null && now.after(tokenDate)){
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("expired", true);
+                    editor.commit();
                     return true;
                 }
             } catch (ParseException e) {

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,11 +27,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+import info.androidhive.fontawesome.FontTextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ConstitRecord extends AppCompatActivity {
 
-    private String skyApiUrl = "https://api.sky.blackbaud.com/constituent/v1/constituents/280";
+    private String skyApiUrl = "https://api.sky.blackbaud.com/constituent/v1/constituents/";
 
     //TODO: Remove subscriptionKey later
     private String subscriptionKey = "f6b4ed3cc9ef41d19195cb3f7ac49b45";
@@ -47,9 +50,12 @@ public class ConstitRecord extends AppCompatActivity {
     // The key of message stored server returned data.
     private static final String KEY_RESPONSE_TEXT = "KEY_RESPONSE_TEXT";
 
+    private ImageView profileImage = null;
     private TextView nameText = null;
     private TextView addressText = null;
     private TextView phoneText = null;
+    private FontTextView addressPinIcon = null;
+    private FontTextView phoneIcon = null;
 
     private SharedPreferences sharedPreferences;
 
@@ -58,19 +64,32 @@ public class ConstitRecord extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_constit_record);
 
-        // eraseCachedData();
-
+        profileImage = findViewById(R.id.profileImage);
         nameText = findViewById(R.id.constitNameText);
         addressText = findViewById(R.id.constitAddressText);
         phoneText = findViewById(R.id.constitPhoneText);
+        addressPinIcon = findViewById(R.id.mapIcon);
+        phoneIcon = findViewById(R.id.phoneIcon);
 
         sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
         bearerToken = sharedPreferences.getString("bearerToken", null);
+        boolean expired = sharedPreferences.getBoolean("expired", false);
 
-        handleIntent(getIntent());
-        updateRecordImage();
-        updateRecordText();
+        Intent intent = getIntent();
+
+        // Set the cached token info
+        handleIntent(intent);
+
+        String constitName = sharedPreferences.getString("featureName", null);
+
+        if (constitName != null) {
+            String constitId = getConstitId(constitName);
+            updateRecordImage(constitId);
+            updateRecordText(constitId);
+        } else {
+            nameText.setText("Record not found");
+        }
     }
 
     // Parse the response from the auth SPA and turn it into a json style string
@@ -100,14 +119,6 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    // TODO: delete this later
-    @SuppressLint("ApplySharedPref")
-    private void eraseCachedData() {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.clear();
-            editor.commit();
-    }
-
     // Get, clean up, and store token info
     @SuppressLint("ApplySharedPref")
     private void setCachedData(JSONObject json) {
@@ -131,27 +142,22 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    private void updateRecordImage() {
+    private void updateRecordImage(String constitId) {
         AsyncUpdateConstitImage asyncUpdateConstitImage = new AsyncUpdateConstitImage();
-        asyncUpdateConstitImage.execute();
+        asyncUpdateConstitImage.execute(skyApiUrl + constitId + "/profilepicture");
     }
 
-    private void updateRecordText() {
-        AsyncUpdateConstitText asyncUpdateConstitText = new AsyncUpdateConstitText();
+    private String getConstitId(String constit) {
+        AsyncGetCall asyncgetCall = new AsyncGetCall();
         try {
-            String responseText = asyncUpdateConstitText.execute().get();
+            String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit).get();
             if (responseText != null) {
-
                 try {
                     JSONObject json = new JSONObject(responseText);
-                    nameText.setText(json.getString("name"));
-
-                    // Clickable address link that opens Google Maps
-                    JSONObject address = json.getJSONObject("address");
-                    addressText.setText(address.getString("formatted_address"));
-
-                    JSONObject phone = json.getJSONObject("phone");
-                    phoneText.setText(phone.getString("number"));
+                    JSONArray responseList = json.getJSONArray("value");
+                    String firstConstit = responseList.get(0).toString();
+                    JSONObject firstConstitJson = new JSONObject(firstConstit);
+                    return firstConstitJson.getString("id");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -160,16 +166,60 @@ public class ConstitRecord extends AppCompatActivity {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private class AsyncUpdateConstitText extends AsyncTask<String, String, String> {
+    private void updateRecordText(String constitId) {
+        AsyncGetCall asyncgetCall = new AsyncGetCall();
+        try {
+            String responseText = asyncgetCall.execute(skyApiUrl + constitId).get();
+            if (responseText != null) {
+                try {
+                    JSONObject json = new JSONObject(responseText);
+                    nameText.setText(json.getString("name"));
+
+                    // Clickable address link that opens Google Maps
+                    JSONObject address = json.getJSONObject("address");
+                    String formattedAddress = address.getString("formatted_address");
+                    if (formattedAddress.equals("")) {
+                        addressText.setText("No address on file");
+                    } else {
+                        addressText.setText(formattedAddress);
+                    }
+
+                    JSONObject phone = json.getJSONObject("phone");
+                    String phoneNumber = phone.getString("number");
+                    if (phoneNumber.equals("")) {
+                        phoneText.setText("No phone number on file");
+                    } else {
+                        phoneText.setText(phoneNumber);
+                    }
+
+                } catch (JSONException e) {
+                    phoneText.setText("No phone number on file");
+                    e.printStackTrace();
+                }
+            } else {
+                profileImage.setImageResource(R.drawable.ic_skywarningicon);
+                nameText.setText("Record not found");
+                addressText.setText("");
+                phoneText.setText("");
+                addressPinIcon.setText("");
+                phoneIcon.setText("");
+
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class AsyncGetCall extends AsyncTask<String, String, String> {
 
         public String responseText = null;
 
         @Override
         protected String doInBackground(String... strings) {
-
-            String reqUrl = skyApiUrl;
+            String reqUrl = strings[0];
 
             // Maintain http url connection.
             HttpURLConnection httpConn = null;
@@ -279,7 +329,7 @@ public class ConstitRecord extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-            String reqUrl = skyApiUrl + "/profilepicture";
+            String reqUrl = strings[0];
 
             // Maintain http url connection.
             HttpURLConnection httpConn = null;
@@ -386,14 +436,24 @@ public class ConstitRecord extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPreExecute();
+            ImageView profileImage = findViewById(R.id.profileImage);
             if (responseText != null) {
-                UpdateImageAsync updateImageAsync = new UpdateImageAsync();
+                JSONObject json = null;
                 try {
-                    Bitmap bitmap = updateImageAsync.execute(responseText).get();
-                    ImageView profileImage = findViewById(R.id.profileImage);
-                    profileImage.setImageBitmap(bitmap);
-                } catch (ExecutionException | InterruptedException e) {
+                    json = new JSONObject(responseText);
+                } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                if (json.length() > 0) {
+                    UpdateImageAsync updateImageAsync = new UpdateImageAsync();
+                    try {
+                        Bitmap bitmap = updateImageAsync.execute(responseText).get();
+                        profileImage.setImageBitmap(bitmap);
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    profileImage.setImageResource(R.drawable.ic_genericprofileimageicon);
                 }
             }
         }
