@@ -1,27 +1,36 @@
 package com.blackbaud.constitview;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.service.voice.VoiceInteractionService;
 import android.view.View;
 import android.widget.Button;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.slice.SliceManager;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
+    private static final String SLICE_AUTHORITY = "com.blackbaud.constitview";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        grantSlicePermissions();
 
         Intent intent = getIntent();
 
@@ -99,5 +108,31 @@ public class MainActivity extends AppCompatActivity {
         paramIn = paramIn.replaceAll("=", "\":\"");
         paramIn = paramIn.replaceAll("&", "\",\"");
         return "{\"" + paramIn + "\"}";
+    }
+
+    private void grantSlicePermissions() {
+        Context context = getApplicationContext();
+        Uri sliceProviderUri =
+                new Uri.Builder()
+                        .scheme(ContentResolver.SCHEME_CONTENT)
+                        .authority(SLICE_AUTHORITY)
+                        .build();
+
+        String assistantPackage = getAssistantPackage(context);
+        if (assistantPackage == null) {
+            return;
+        }
+        SliceManager.getInstance(context)
+                .grantSlicePermission(assistantPackage, sliceProviderUri);
+    }
+
+    private String getAssistantPackage(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> resolveInfoList = packageManager.queryIntentServices(
+                new Intent(VoiceInteractionService.SERVICE_INTERFACE), 0);
+        if (resolveInfoList.isEmpty()) {
+            return null;
+        }
+        return resolveInfoList.get(0).serviceInfo.packageName;
     }
 }
