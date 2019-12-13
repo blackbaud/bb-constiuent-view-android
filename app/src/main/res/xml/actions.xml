@@ -1,28 +1,16 @@
 <?xml version ="1.0" encoding ="utf-8"?><!--  Learn More about how to use App Actions: https://developer.android.com/guide/actions/index.html -->
 <actions xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--    Example Action -->
-    <!--    <action intentName="Intent name (actions.intent.*)"> -->
-    <!--        <action-display -->
-    <!--            icon="@mipmap/..." -->
-    <!--            labelTemplate="@array/..." /> -->
-    <!--        <fulfillment urlTemplate="Action content URI or URL"> -->
-    <!--            <parameter-mapping -->
-    <!--                intentParameter="Parameter name in Intent URI" -->
-    <!--                urlParameter="Parameter name in URL" /> -->
-    <!--        </fulfillment> -->
-    <!--    </action> -->
-
     <action intentName="actions.intent.OPEN_APP_FEATURE">
-
-        <!-- Each action requires at least one fulfillment that defines how the app will handle this action -->
-        <!-- Define the urlTemplate in the format you define your deeplinks in AndroidManifest.xml -->
-
         <fulfillment urlTemplate="https://run-main-activity.com{?featureName}">
             <parameter-mapping
                 intentParameter="feature"
                 urlParameter="featureName" />
 
         </fulfillment>
-
     </action>
+<!--    <action intentName="actions.intent.SHOW_CONSTIT">-->
+<!--        <fulfillment-->
+<!--            fulfillmentMode="actions.fulfillment.SLICE"-->
+<!--            urlTemplate="content://my.food.service/status" />-->
+<!--    </action>-->
 </actions>

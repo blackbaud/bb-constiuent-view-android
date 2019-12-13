@@ -23,7 +23,6 @@ import androidx.slice.SliceManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SharedPreferences sharedPreferences;
     private static final String SLICE_AUTHORITY = "com.blackbaud.constitview";
 
     @Override

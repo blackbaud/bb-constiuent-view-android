@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RENXT Constituent Preview</string>
+    <string name="app_name">Constituent</string>
     <string name="constit_record_text">Loading...</string>
     <string name="login_button">Login</string>
     <string name="constit_record_button">Open Constituent Record</string>
