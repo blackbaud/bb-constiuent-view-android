@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">Constituent</string>
-    <string name="constit_record_text">Loading...</string>
+    <string name="constit_record_text">Loading…</string>
     <string name="login_button">Login</string>
+    <string name="logout_button">Logout</string>
     <string name="constit_record_button">Open Constituent Record</string>
     <string name="title_activity_login">Login</string>
+    <string name="record_not_found">Record not found</string>
+    <string name="no_address">No address on file</string>
+    <string name="no_phone">No phone number on file</string>
 
     <string name="click_to_open_app">Click to open app</string>
 
