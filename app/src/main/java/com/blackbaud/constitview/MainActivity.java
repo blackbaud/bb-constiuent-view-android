@@ -1,5 +1,6 @@
 package com.blackbaud.constitview;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,12 +10,12 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.service.voice.VoiceInteractionService;
-import android.view.View;
 import android.widget.Button;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,9 @@ import androidx.slice.SliceManager;
 public class MainActivity extends AppCompatActivity {
 
     private static final String SLICE_AUTHORITY = "com.blackbaud.constitview";
+    private SharedPreferences sharedPreferences;
+
+    private Button loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,25 +35,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         grantSlicePermissions();
 
-        Intent intent = getIntent();
+        loginButton = findViewById((R.id.loginButton));
 
-        if (intent != null) {
-            handleIntent(intent);
+        sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
+
+        if (getIntent() != null) {
+            handleIntent(getIntent());
         }
         // intent was null for some reason render the page like normal
         else {
-            Button loginButton = findViewById((R.id.loginButton));
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    goToLogin(intent);
-                }
-            });
+            loginButton.setOnClickListener(v -> goToLogin(getIntent()));
         }
     }
 
-
-    //TODO: will use this to handle voice parameters later
+    @SuppressLint("ApplySharedPref")
     private void handleIntent(Intent intent){
         if (intent != null){
             String action = intent.getAction();
@@ -59,17 +58,29 @@ public class MainActivity extends AppCompatActivity {
             }
             // request from normal application run
             else{
-                Button loginButton = findViewById((R.id.loginButton));
-                loginButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                boolean loggedIn = !sharedPreferences.getBoolean("expired", false);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (loggedIn){
+                    loginButton.setText(R.string.logout_button);
+                    loginButton.setOnClickListener(v -> {
+                        Date now = new Date();
+                        editor.putString("expires", now.toString());
+                        editor.putBoolean("expired", true);
+                        editor.commit();
+                        loginButton.setText(R.string.login_button);
+                        refreshActivity();
+                    });
+                } else {
+                    loginButton.setOnClickListener(v -> {
+                        editor.putString("featureName", null);
                         goToLogin(intent);
-                    }
-                });
+                    });
+                }
             }
         }
     }
 
+    @SuppressLint("ApplySharedPref")
     private void goToLogin(Intent requestIntent) {
         Intent intent = new Intent(this, Login.class);
 
@@ -81,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             editor.commit();
         }
         startActivity(intent);
+    }
+
+    private void refreshActivity(){
+        finish();
+        startActivity(getIntent());
     }
 
     private String parseNameFromIntent(Intent intent) {

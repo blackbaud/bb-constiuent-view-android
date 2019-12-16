@@ -17,8 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 public class Login extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint({"SetJavaScriptEnabled", "ApplySharedPref"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +27,11 @@ public class Login extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
         String bearerToken = sharedPreferences.getString("bearerToken", null);
-        Boolean tokenExpired = checkIfTokenExpired();
+        Boolean tokenExpired = sharedPreferences.getBoolean("expired", false);
+
+        if(!tokenExpired) {
+             tokenExpired = checkIfTokenExpired();
+        }
 
         // token is still good load up constit record activity
         if (bearerToken != null && !tokenExpired){
@@ -35,6 +40,9 @@ public class Login extends AppCompatActivity {
 
         // token never existed or expired so initiate login sequence then go to constit activity
         else {
+            editor = sharedPreferences.edit();
+            editor.putBoolean("expired", false);
+            editor.commit();
             WebView webView = findViewById(R.id.webView);
             String url = "https://oauth2.sky.blackbaud.com/authorization?client_id=385f895f-b284-4dc9-af8a-0c1260b3e3f2&response_type=code&redirect_uri=https://host.nxt.blackbaud.com/app-redirect/redirect-stevenandroidassistant/";
             webView.loadUrl(url);
@@ -42,6 +50,7 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ApplySharedPref")
     private Boolean checkIfTokenExpired() {
         String expireDateTime = sharedPreferences.getString("expires", null);
         if (expireDateTime != null) {
@@ -50,7 +59,7 @@ public class Login extends AppCompatActivity {
                 Date tokenDate = tokenDateFormatter.parse(expireDateTime);
                 Date now = new Date();
                 if (tokenDate != null && now.after(tokenDate)){
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor = sharedPreferences.edit();
                     editor.putBoolean("expired", true);
                     editor.commit();
                     return true;

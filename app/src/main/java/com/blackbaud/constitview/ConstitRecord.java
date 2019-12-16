@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,12 +19,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
@@ -75,23 +71,22 @@ public class ConstitRecord extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
         constitRecordCache = getSharedPreferences("ConstitRecordCache", Context.MODE_PRIVATE);
-
         bearerToken = sharedPreferences.getString("bearerToken", null);
-        boolean expired = sharedPreferences.getBoolean("expired", false);
-
-        Intent intent = getIntent();
 
         // Set the cached token info
-        handleIntent(intent);
+        handleIntent(getIntent());
 
         String constitName = sharedPreferences.getString("featureName", null);
 
-        if (constitName != null) {
+        if (constitName != null && !constitName.equals("")) {
             String constitId = getConstitId(constitName);
+            if (constitId == null) {
+                nameText.setText(R.string.record_not_found);
+            }
             updateRecordImage(constitId);
             updateRecordText(constitId);
         } else {
-            nameText.setText("Record not found");
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 
@@ -172,6 +167,7 @@ public class ConstitRecord extends AppCompatActivity {
         return null;
     }
 
+    @SuppressLint("ApplySharedPref")
     private void updateRecordText(String constitId) {
         AsyncGetCall asyncgetCall = new AsyncGetCall();
         try {
@@ -185,7 +181,7 @@ public class ConstitRecord extends AppCompatActivity {
                     JSONObject address = json.getJSONObject("address");
                     String formattedAddress = address.getString("formatted_address");
                     if (formattedAddress.equals("")) {
-                        addressText.setText("No address on file");
+                        addressText.setText(R.string.no_address);
                     } else {
                         addressText.setText(formattedAddress);
                     }
@@ -193,18 +189,18 @@ public class ConstitRecord extends AppCompatActivity {
                     JSONObject phone = json.getJSONObject("phone");
                     String phoneNumber = phone.getString("number");
                     if (phoneNumber.equals("")) {
-                        phoneText.setText("No phone number on file");
+                        phoneText.setText(R.string.no_phone);
                     } else {
                         phoneText.setText(phoneNumber);
                     }
 
                 } catch (JSONException e) {
-                    phoneText.setText("No phone number on file");
+                    phoneText.setText(R.string.no_phone);
                     e.printStackTrace();
                 }
             } else {
                 profileImage.setImageResource(R.drawable.ic_skywarningicon);
-                nameText.setText("Record not found");
+                nameText.setText(R.string.record_not_found);
                 addressText.setText("");
                 phoneText.setText("");
                 addressPinIcon.setText("");
@@ -216,25 +212,16 @@ public class ConstitRecord extends AppCompatActivity {
             editor.putString("constitName", nameText.getText().toString());
             editor.putString("constitAddress", addressText.getText().toString());
             editor.putString("constitPhone", phoneText.getText().toString());
-//            editor.putString("constitImage", encodeBitmapBase64());
             editor.commit();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private String encodeBitmapBase64(){
-        Bitmap bm=((BitmapDrawable)profileImage.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
-        byte[] byteArray = baos.toByteArray();
-        String encodedBitmapString = Base64.encodeToString(byteArray, Base64.DEFAULT);
-        return encodedBitmapString;
-    }
-
+    @SuppressLint("StaticFieldLeak")
     private class AsyncGetCall extends AsyncTask<String, String, String> {
 
-        public String responseText = null;
+        private String responseText = null;
 
         @Override
         protected String doInBackground(String... strings) {
@@ -250,7 +237,7 @@ public class ConstitRecord extends AppCompatActivity {
             BufferedReader bufReader = null;
 
             // Save server response text.
-            StringBuffer readTextBuf = new StringBuffer();
+            StringBuilder readTextBuf = new StringBuilder();
 
             try {
                 // Create a URL object use page url.
@@ -314,13 +301,10 @@ public class ConstitRecord extends AppCompatActivity {
                     }
                 }
                 httpConn.disconnect();
-            }catch(MalformedURLException ex)
+            } catch(IOException ex)
             {
                 Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-            }catch(IOException ex)
-            {
-                Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-            }finally {
+            } finally {
                 try {
                     if (bufReader != null) {
                         bufReader.close();
@@ -342,9 +326,10 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class AsyncUpdateConstitImage extends AsyncTask<String, String, String> {
 
-        public String responseText = null;
+        private String responseText = null;
 
         @Override
         protected String doInBackground(String... strings) {
@@ -360,7 +345,7 @@ public class ConstitRecord extends AppCompatActivity {
             BufferedReader bufReader = null;
 
             // Save server response text.
-            StringBuffer readTextBuf = new StringBuffer();
+            StringBuilder readTextBuf = new StringBuilder();
 
             try {
                 // Create a URL object use page url.
@@ -425,13 +410,10 @@ public class ConstitRecord extends AppCompatActivity {
                     }
                 }
                 httpConn.disconnect();
-            }catch(MalformedURLException ex)
+            } catch(IOException ex)
             {
                 Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-            }catch(IOException ex)
-            {
-                Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-            }finally {
+            } finally {
                 try {
                     if (bufReader != null) {
                         bufReader.close();
@@ -463,7 +445,7 @@ public class ConstitRecord extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (json.length() > 0) {
+                if (json != null && json.length() > 0) {
                     UpdateImageAsync updateImageAsync = new UpdateImageAsync();
                     try {
                         Bitmap bitmap = updateImageAsync.execute(responseText).get();
@@ -477,6 +459,7 @@ public class ConstitRecord extends AppCompatActivity {
             }
         }
 
+        @SuppressLint("StaticFieldLeak")
         private class UpdateImageAsync extends AsyncTask<String, String, Bitmap> {
 
             @Override
@@ -484,8 +467,7 @@ public class ConstitRecord extends AppCompatActivity {
                 try {
                     // Get image URL
                     JSONObject json = new JSONObject(responseText);
-                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(json.getString("url")).getContent());
-                    return bitmap;
+                    return BitmapFactory.decodeStream((InputStream)new URL(json.getString("url")).getContent());
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
