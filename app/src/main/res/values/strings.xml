@@ -8,6 +8,9 @@
     <string name="record_not_found">Record not found</string>
     <string name="no_address">No address on file</string>
     <string name="no_phone">No phone number on file</string>
+    <string name="welcome_text">Welcome to Blackbaud</string>
+    <string name="instuctions_title">Ask Google to show you a constituent</string>
+    <string name="instuctions_body">To look up a constituent Say \"OK Google, open constituent\" followed by their name.</string>
 
     <string name="click_to_open_app">Click to open app</string>
 
