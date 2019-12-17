@@ -10,4 +10,5 @@
     <color name="seperatorContentInContainer">#e2e3e4</color>
     <color name="seperatorContainer">#cdcfd2</color>
     <color name="textLink">#0974a1</color>
+    <color name="disabledButton">#cdcfd2</color>
 </resources>

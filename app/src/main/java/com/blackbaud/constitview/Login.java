@@ -72,6 +72,7 @@ public class Login extends AppCompatActivity {
             return true;
         }
     }
+
     private void goToConstitRecord() {
         Intent intent = new Intent(this, ConstitRecord.class);
         startActivity(intent);
