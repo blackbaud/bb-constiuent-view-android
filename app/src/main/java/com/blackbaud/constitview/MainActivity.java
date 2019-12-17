@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.service.voice.VoiceInteractionService;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
 
     private Button loginButton;
+    private Button searchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         grantSlicePermissions();
 
-        loginButton = findViewById((R.id.loginButton));
+        loginButton = findViewById(R.id.loginButton);
+        searchButton = findViewById(R.id.searchButton);
 
         sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         // intent was null for some reason render the page like normal
         else {
             loginButton.setOnClickListener(v -> goToLogin(getIntent()));
+            searchButton.setOnClickListener(v -> goToConstiuentView(getIntent()));
         }
     }
 
@@ -70,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                         loginButton.setText(R.string.login_button);
                         refreshActivity();
                     });
+                    searchButton.setOnClickListener(v -> {
+                        goToConstiuentView(intent);
+                    });
                 } else {
                     loginButton.setOnClickListener(v -> {
                         editor.putString("featureName", null);
@@ -88,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
             String name = parseNameFromIntent(requestIntent);
             SharedPreferences sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("featureName", name);
+            editor.commit();
+        }
+        startActivity(intent);
+    }
+
+    private void goToConstiuentView(Intent requestIntent) {
+        Intent intent = new Intent(this, ConstitRecord.class);
+
+        if (requestIntent != null) {
+            TextView searchText = findViewById(R.id.searchText);
+            SharedPreferences sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            String name = searchText.getText().toString();
             editor.putString("featureName", name);
             editor.commit();
         }
