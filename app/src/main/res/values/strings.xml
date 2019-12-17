@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ConstitView</string>
+    <string name="app_name">Constituent</string>
     <string name="constit_record_text">Loading…</string>
     <string name="login_button">Login</string>
     <string name="logout_button">Logout</string>
