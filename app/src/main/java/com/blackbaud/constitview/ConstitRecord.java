@@ -32,9 +32,7 @@ import info.androidhive.fontawesome.FontTextView;
 public class ConstitRecord extends AppCompatActivity {
 
     private String skyApiUrl = "https://api.sky.blackbaud.com/constituent/v1/constituents/";
-
-    //TODO: Remove subscriptionKey later
-    private String subscriptionKey = "f6b4ed3cc9ef41d19195cb3f7ac49b45";
+    private String subscriptionKey;
 
     private String bearerToken = null;
 
@@ -61,6 +59,9 @@ public class ConstitRecord extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_constit_record);
+
+        // Get your SKY Api subscription key from the string resource file
+        subscriptionKey = getResources().getString(R.string.subscriptionKey);
 
         profileImage = findViewById(R.id.profileImage);
         nameText = findViewById(R.id.constitNameText);

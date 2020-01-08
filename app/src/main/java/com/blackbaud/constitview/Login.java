@@ -19,11 +19,17 @@ public class Login extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
+    private String authUrl = "https://oauth2.sky.blackbaud.com/authorization?";
+
     @SuppressLint({"SetJavaScriptEnabled", "ApplySharedPref"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Get your client Id and redirect URI from the string resource file
+        String clientId = getResources().getString(R.string.clientId);
+        String redirectUri = getResources().getString(R.string.redirectUri);
 
         sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
         String bearerToken = sharedPreferences.getString("bearerToken", null);
@@ -40,12 +46,12 @@ public class Login extends AppCompatActivity {
 
         // token never existed or expired so initiate login sequence then go to constit activity
         else {
+            authUrl += String.format("client_id=%s&response_type=code&redirect_uri=%s", clientId, redirectUri);
             editor = sharedPreferences.edit();
             editor.putBoolean("expired", false);
             editor.commit();
             WebView webView = findViewById(R.id.webView);
-            String url = "https://oauth2.sky.blackbaud.com/authorization?client_id=385f895f-b284-4dc9-af8a-0c1260b3e3f2&response_type=code&redirect_uri=https://host.nxt.blackbaud.com/app-redirect/redirect-stevenandroidassistant/";
-            webView.loadUrl(url);
+            webView.loadUrl(authUrl);
             webView.getSettings().setJavaScriptEnabled(true);
         }
     }

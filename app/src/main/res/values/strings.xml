@@ -15,15 +15,10 @@
     <string name="constit_search_input_hint">Search for a contituent</string>
     <string name="click_to_open_app">Click to open app</string>
 
-    <string name="feature_1">feature 1</string>
-    <string name="feature_2">feature 2</string>
-    <string name="feature_3">feature 3</string>
+    <!-- Application constants TODO: Remove these before release and document how to obtain the user's own -->
+    <string name="subscriptionKey">f6b4ed3cc9ef41d19195cb3f7ac49b45</string>
+    <!-- TODO: Add to read me. This id is provided when you authorize your application. https://developer.blackbaud.com/skyapi/docs/createapp-->
+    <string name="clientId">385f895f-b284-4dc9-af8a-0c1260b3e3f2</string>
+    <string name="redirectUri">https://host.nxt.blackbaud.com/app-redirect/redirect-stevenandroidassistant/</string>
 
-    <string name="title_feature_1">title 1</string>
-    <string name="title_feature_2">title 2</string>
-    <string name="title_feature_3">title 3</string>
-
-    <string name="subtitle_feature_1">this is feature 1</string>
-    <string name="subtitle_feature_2">this is feature 2</string>
-    <string name="subtitle_feature_3">this is feature 3</string>
 </resources>

@@ -3,7 +3,6 @@ package com.blackbaud.constitview;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,10 +18,7 @@ import androidx.slice.builders.GridRowBuilder;
 import androidx.slice.builders.ListBuilder;
 import androidx.slice.builders.SliceAction;
 
-public class MySliceProvider extends SliceProvider {
-
-    SharedPreferences sharedPreferences;
-    SharedPreferences constitRecordCache;
+public class ConstiuentSliceProvider extends SliceProvider {
 
     @Override
     public boolean onCreateSliceProvider() {
@@ -45,22 +41,6 @@ public class MySliceProvider extends SliceProvider {
 
         if (context != null) {
             SliceAction activityAction = createActivityAction();
-
-//            sharedPreferences = context.getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = sharedPreferences.edit();
-//            editor.putString("featureName", "Robert Hernandez");
-//            editor.commit();
-//
-//            Intent intent = new Intent();
-//            Uri uri = Uri.parse("https://run-main-activity.com?featureName=" + sharedPreferences.getString("featureName", "ABC"));
-//            intent.setData(uri);
-//            try {
-//                activityAction.getAction().send(context, 0, intent);
-//            } catch (PendingIntent.CanceledException e) {
-//                e.printStackTrace();
-//            }
-//
-//            constitRecordCache = context.getSharedPreferences("ConstitRecordCache", Context.MODE_PRIVATE);
 
             //Create the ListBuilder
             ListBuilder listBuilder = new ListBuilder(getContext(), sliceUri, ListBuilder.INFINITY);
