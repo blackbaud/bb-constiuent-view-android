@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Constituent</string>
+    <string name="constit_record_text">Loading…</string>
+    <string name="login_button">Login</string>
+    <string name="logout_button">Logout</string>
+    <string name="constit_record_button">Open Constituent Record</string>
+    <string name="title_activity_login">Login</string>
+    <string name="record_not_found">Record not found</string>
+    <string name="no_address">No address on file</string>
+    <string name="no_phone">No phone number on file</string>
+    <string name="welcome_text">Welcome to Blackbaud Constituent View</string>
+    <string name="instuctions_title">Ask Google to show you a constituent</string>
+    <string name="instuctions_body">To look up a constituent say \"OK Google, open constituent\" followed by their name. You can can also say or enter their name below.</string>
+    <string name="search_button">Search</string>
+    <string name="constit_search_input_hint">Search for a contituent</string>
+    <string name="click_to_open_app">Click to open app</string>
+
+    <!-- Application constants TODO: Document how to obtain the user's own -->
+    <string name="subscriptionKey"></string>
+    <!-- TODO: Add to read me. This id is provided when you authorize your application. https://developer.blackbaud.com/skyapi/docs/createapp-->
+    <string name="clientId"></string>
+    <string name="redirectUri">/</string>
+
+</resources>

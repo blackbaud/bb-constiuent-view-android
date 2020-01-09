@@ -1,0 +1,16 @@
+<?xml version ="1.0" encoding ="utf-8"?><!--  Learn More about how to use App Actions: https://developer.android.com/guide/actions/index.html -->
+<actions xmlns:android="http://schemas.android.com/apk/res/android">
+    <action intentName="actions.intent.OPEN_APP_FEATURE">
+        <fulfillment urlTemplate="https://run-main-activity.com{?featureName}">
+            <parameter-mapping
+                intentParameter="feature"
+                urlParameter="featureName" />
+
+        </fulfillment>
+    </action>
+<!--    <action intentName="actions.intent.SHOW_CONSTIT">-->
+<!--        <fulfillment-->
+<!--            fulfillmentMode="actions.fulfillment.SLICE"-->
+<!--            urlTemplate="content://my.food.service/status" />-->
+<!--    </action>-->
+</actions>
