@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject json = new JSONObject(paramJson(responseParam));
                 name = json.getString("featureName");
             } catch (JSONException e) {
-                e.printStackTrace();
+                // Handle error
             }
         }
         return name;
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             } catch (ParseException e) {
-                e.printStackTrace();
+                // Handle error
             }
             return false;
         } else {

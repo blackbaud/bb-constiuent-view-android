@@ -72,7 +72,7 @@ public class ConstiuentSliceProvider extends SliceProvider {
                         .addCell( new GridRowBuilder.CellBuilder()
                                 .addImage(IconCompat.createWithResource(context, R.drawable.ic_phone_black_24dp),
                                         ListBuilder.SMALL_IMAGE)
-                                .addText("(843) 526-8957")));
+                                .addText("(555) 526-8957")));
 
             } catch (IOException e) {
                 // handle exception

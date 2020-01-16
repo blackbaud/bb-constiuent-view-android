@@ -16,9 +16,9 @@
     <string name="click_to_open_app">Click to open app</string>
 
     <!-- Application constants TODO: Document how to obtain the user's own -->
-    <string name="subscriptionKey"></string>
+    <string name="subscriptionKey">f6b4ed3cc9ef41d19195cb3f7ac49b45</string>
     <!-- TODO: Add to read me. This id is provided when you authorize your application. https://developer.blackbaud.com/skyapi/docs/createapp-->
-    <string name="clientId"></string>
-    <string name="redirectUri">/</string>
+    <string name="clientId">385f895f-b284-4dc9-af8a-0c1260b3e3f2</string>
+    <string name="redirectUri">https://host.nxt.blackbaud.com/app-redirect/redirect-stevenandroidassistant/</string>
 
 </resources>

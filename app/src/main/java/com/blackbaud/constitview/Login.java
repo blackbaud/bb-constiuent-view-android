@@ -71,7 +71,7 @@ public class Login extends AppCompatActivity {
                     return true;
                 }
             } catch (ParseException e) {
-                e.printStackTrace();
+                // Handle error
             }
             return false;
         } else {

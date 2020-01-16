@@ -111,7 +111,7 @@ public class ConstitRecord extends AppCompatActivity {
                         JSONObject json = new JSONObject(paramJson(response));
                         setCachedData(json);
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        // Handle error
                     }
                 }
             }
@@ -137,7 +137,7 @@ public class ConstitRecord extends AppCompatActivity {
 
             editor.commit();
         } catch (JSONException e) {
-            e.printStackTrace();
+            // Handle error
         }
     }
 
@@ -159,11 +159,11 @@ public class ConstitRecord extends AppCompatActivity {
                     return firstConstitJson.getString("id");
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    // Handle error
                 }
             }
         } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+            // Handle error
         }
         return null;
     }
@@ -197,7 +197,7 @@ public class ConstitRecord extends AppCompatActivity {
 
                 } catch (JSONException e) {
                     phoneText.setText(R.string.no_phone);
-                    e.printStackTrace();
+                    // Handle error
                 }
             } else {
                 profileImage.setImageResource(R.drawable.ic_skywarningicon);
@@ -215,7 +215,7 @@ public class ConstitRecord extends AppCompatActivity {
             editor.putString("constitPhone", phoneText.getText().toString());
             editor.commit();
         } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+            // Handle error
         }
     }
 
@@ -444,7 +444,7 @@ public class ConstitRecord extends AppCompatActivity {
                 try {
                     json = new JSONObject(responseText);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    // Handle error
                 }
                 if (json != null && json.length() > 0) {
                     UpdateImageAsync updateImageAsync = new UpdateImageAsync();
@@ -452,7 +452,7 @@ public class ConstitRecord extends AppCompatActivity {
                         Bitmap bitmap = updateImageAsync.execute(responseText).get();
                         profileImage.setImageBitmap(bitmap);
                     } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
+                        // Handle error
                     }
                 } else {
                     profileImage.setImageResource(R.drawable.ic_genericprofileimageicon);
@@ -470,7 +470,7 @@ public class ConstitRecord extends AppCompatActivity {
                     JSONObject json = new JSONObject(responseText);
                     return BitmapFactory.decodeStream((InputStream)new URL(json.getString("url")).getContent());
                 } catch (JSONException | IOException e) {
-                    e.printStackTrace();
+                    // Handle error
                 }
                 return null;
             }
