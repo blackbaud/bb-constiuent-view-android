@@ -19,10 +19,10 @@
     Application constants
     You need to fill these in with your own information
     -->
-    <string name="subscriptionKey"></string>
-    <string name="clientId"></string>
-    <string name="redirectUri"></string>
-    <string name="clientSecret"></string>
-    <string name="authorization"></string>
+    <string name="subscriptionKey">f6b4ed3cc9ef41d19195cb3f7ac49b45</string>
+    <string name="clientId">385f895f-b284-4dc9-af8a-0c1260b3e3f2</string>
+    <string name="redirectUri">https://host.nxt.blackbaud.com/app-redirect/redirect-androiddemo/</string>
+    <string name="clientSecret">XY/eVmYR0m0tL/MFwAbc/Gnn/u1StlB1HpwIqBoz4L8=</string>
+    <string name="authorization">Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9</string>
 
 </resources>
