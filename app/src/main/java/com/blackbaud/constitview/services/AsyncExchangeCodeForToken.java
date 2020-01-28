@@ -35,24 +35,44 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
     protected String doInBackground(ExchangeCode... params) {
         Context context = params[0].getContext();
         String code = params[0].getCode();
+        String refreshToken = params[0].getRefreshToken();
+        String grantType = params[0].getGrantType();
+        String redirectUri = params[0].getRedirectUri();
 
         sharedPreferences = context.getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
         try {
             OkHttpClient client = new OkHttpClient();
-
             MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-            RequestBody body = RequestBody.create(mediaType, "grant_type=authorization_code&redirect_uri=https%3A%2F%2Fhost.nxt.blackbaud.com%2Fapp-redirect%2Fredirect-androiddemo%2F&code=" + code);
-            Request request = new Request.Builder()
-                    .url("https://oauth2.sky.blackbaud.com/token")
-                    .post(body)
-                    .addHeader("Authorization", "Basic Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9")
-                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                    .build();
+            Response response = null;
 
-            Response response = client.newCall(request).execute();
-            assert response.body() != null;
-            responseText = response.body().string();
+            // Exchange auth code for access token
+            if (refreshToken == null) {
+                RequestBody body = RequestBody.create(mediaType, "grant_type=" + grantType  + "&redirect_uri=" + redirectUri + "&code=" + code);
+                Request request = new Request.Builder()
+                        .url("https://oauth2.sky.blackbaud.com/token")
+                        .post(body)
+                        .addHeader("Authorization", "Basic Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9")
+                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                        .build();
+                response = client.newCall(request).execute();
+            }
+
+            // Exchange refresh token for access token
+            if (refreshToken != null) {
+                RequestBody body = RequestBody.create(mediaType, "grant_type=" + grantType  + "&refresh_token=" + refreshToken);
+                Request request = new Request.Builder()
+                        .url("https://oauth2.sky.blackbaud.com/token")
+                        .post(body)
+                        .addHeader("Authorization", "Basic Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9")
+                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                        .build();
+                response = client.newCall(request).execute();
+            }
+
+            if (response.body() != null) {
+                responseText = response.body().string();
+            }
         } catch (IOException ex) {
             // Handle ex
         }
@@ -80,7 +100,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
                         Calendar calendar = Calendar.getInstance();
                         assert date != null;
                         calendar.setTime(date);
-                        calendar.add(Calendar.MINUTE, 58);
+                        calendar.add(Calendar.MINUTE, Integer.parseInt(json.getString("expires_in")));
 
                         // Store refresh token expiration date
                         // editor.putString("refreshTokenExpiration", refreshTokenExipration);
@@ -94,9 +114,22 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
                         String expires = accessTokenExpDate + " " + accessTokenExpTime;
                         editor.putString("expires", expires);
 
-                        // Store current token
+                        // Store current access token
                         String bearerToken = "Bearer " + json.getString("access_token");
                         editor.putString("bearerToken", bearerToken);
+
+                        // Store current refresh token
+                        String refreshToken = json.getString("refresh_token");
+                        editor.putString("refreshToken", refreshToken);
+
+                        // Store refresh token expiration
+                        Calendar refreshTokenCalender = Calendar.getInstance();
+                        refreshTokenCalender.setTime(date);
+                        refreshTokenCalender.add(Calendar.MINUTE, Integer.parseInt(json.getString("refresh_token_expires_in")));
+                        String refreshTokenExpDate = dateSdf.format(refreshTokenCalender.getTime());
+                        String refreshTokenExpTime = timeSdf.format(refreshTokenCalender.getTime());
+                        String refreshTokenExpires = refreshTokenExpDate + " " + refreshTokenExpTime;
+                        editor.putString("refreshTokenExpires", refreshTokenExpires);
                         editor.commit();
                     } catch (JSONException | ParseException e) {
                         // Handle error

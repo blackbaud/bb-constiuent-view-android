@@ -98,7 +98,7 @@ public class ConstitRecord extends AppCompatActivity {
                         JSONObject json = new JSONObject(paramJson(response));
                         String accessCode = json.getString("code");
 
-                        ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), accessCode);
+                        ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), accessCode, null, "authorization_code", "https%3A%2F%2Fhost.nxt.blackbaud.com%2Fapp-redirect%2Fredirect-androiddemo%2F&code=");
 
                         // Set cashed token data using returned code
                         AsyncExchangeCodeForToken asyncExchangeCodeForToken = new AsyncExchangeCodeForToken();
