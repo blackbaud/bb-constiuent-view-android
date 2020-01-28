@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.blackbaud.constitview.models.ExchangeCode;
 import com.blackbaud.constitview.services.AsyncExchangeCodeForToken;
+import com.blackbaud.constitview.services.AsyncGet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -144,9 +145,9 @@ public class ConstitRecord extends AppCompatActivity {
     }
 
     private String getConstitId(String constit) {
-        AsyncGetCall asyncgetCall = new AsyncGetCall();
+        AsyncGet asyncgetCall = new AsyncGet();
         try {
-            String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit).get();
+            String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit, bearerToken, subscriptionKey).get();
             if (responseText != null) {
                 try {
                     JSONObject json = new JSONObject(responseText);
@@ -167,9 +168,9 @@ public class ConstitRecord extends AppCompatActivity {
 
     @SuppressLint("ApplySharedPref")
     private void updateRecordText(String constitId) {
-        AsyncGetCall asyncgetCall = new AsyncGetCall();
+        AsyncGet asyncgetCall = new AsyncGet();
         try {
-            String responseText = asyncgetCall.execute(skyApiUrl + constitId).get();
+            String responseText = asyncgetCall.execute(skyApiUrl + constitId, bearerToken, subscriptionKey).get();
             if (responseText != null) {
                 try {
                     JSONObject json = new JSONObject(responseText);
@@ -213,114 +214,6 @@ public class ConstitRecord extends AppCompatActivity {
             editor.commit();
         } catch (ExecutionException | InterruptedException e) {
             // Handle error
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class AsyncGetCall extends AsyncTask<String, String, String> {
-
-        private String responseText = null;
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String reqUrl = strings[0];
-
-            // Maintain http url connection.
-            HttpURLConnection httpConn = null;
-
-            // Read text input stream.
-            InputStreamReader isReader = null;
-
-            // Read text into buffer.
-            BufferedReader bufReader = null;
-
-            // Save server response text.
-            StringBuilder readTextBuf = new StringBuilder();
-
-            try {
-                // Create a URL object use page url.
-                URL url = new URL(reqUrl);
-
-                // Open http connection to web server.
-                httpConn = (HttpURLConnection)url.openConnection();
-
-                // Headers
-                httpConn.setRequestProperty("Authorization", bearerToken);
-                httpConn.setRequestProperty("Bb-Api-Subscription-Key", subscriptionKey);
-
-                // Set http request method to get.
-                httpConn.setRequestMethod("GET");
-
-                // Set connection timeout and read timeout value.
-                httpConn.setConnectTimeout(10000);
-                httpConn.setReadTimeout(10000);
-
-                // Get input stream from web url connection.
-                InputStream inputStream = httpConn.getInputStream();
-
-                // Create input stream reader based on url connection input stream.
-                isReader = new InputStreamReader(inputStream);
-
-                // Create buffered reader.
-                bufReader = new BufferedReader(isReader);
-
-                // Read line of text from server response.
-                String line = bufReader.readLine();
-
-                // Loop while return line is not null.
-                while(line != null)
-                {
-                    // Append the text to string buffer.
-                    readTextBuf.append(line);
-
-                    // Continue to read text line.
-                    line = bufReader.readLine();
-                }
-
-                // Send message to main thread to update response text in TextView after read all.
-                Message message = new Message();
-
-                // Set message type.
-                message.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
-
-                // Create a bundle object.
-                Bundle bundle = new Bundle();
-                // Put response text in the bundle with the special key.
-                bundle.putString(KEY_RESPONSE_TEXT, readTextBuf.toString());
-                // Set bundle data in message.
-                message.setData(bundle);
-                // Send message to main thread Handler to process.
-                if(message.what == REQUEST_CODE_SHOW_RESPONSE_TEXT)
-                {
-                    Bundle msgBundle = message.getData();
-                    if(msgBundle != null)
-                    {
-                        responseText = bundle.getString(KEY_RESPONSE_TEXT);
-                    }
-                }
-                httpConn.disconnect();
-            } catch(IOException ex)
-            {
-                Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-            } finally {
-                try {
-                    if (bufReader != null) {
-                        bufReader.close();
-                    }
-
-                    if (isReader != null) {
-                        isReader.close();
-                    }
-
-                    if (httpConn != null) {
-                        httpConn.disconnect();
-                    }
-                } catch (IOException ex) {
-                    Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-                }
-            }
-
-            return responseText;
         }
     }
 
