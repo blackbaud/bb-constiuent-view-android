@@ -14,6 +14,9 @@ import android.service.voice.VoiceInteractionService;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.blackbaud.constitview.models.ExchangeCode;
+import com.blackbaud.constitview.services.AsyncExchangeCodeForToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject json = new JSONObject(paramJson(responseParam));
                 name = json.getString("featureName");
             } catch (JSONException e) {
-                e.printStackTrace();
+                // Handle error
             }
         }
         return name;
@@ -192,19 +195,29 @@ public class MainActivity extends AppCompatActivity {
     private Boolean checkIfTokenExpired() {
         String expireDateTime = sharedPreferences.getString("expires", null);
         if (expireDateTime != null) {
-            SimpleDateFormat tokenDateFormatter = new SimpleDateFormat("yy-MM-dd HH:mm:ss", Locale.US);
+            SimpleDateFormat tokenDateFormatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss", Locale.US);
             try {
                 Date tokenDate = tokenDateFormatter.parse(expireDateTime);
                 Date now = new Date();
                 if (tokenDate != null && now.after(tokenDate)){
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor = sharedPreferences.edit();
-                    editor.putBoolean("expired", true);
-                    editor.commit();
-                    return true;
+                    String refreshExipreDateTime = sharedPreferences.getString("refreshTokenExpires", null);
+                    assert refreshExipreDateTime != null;
+                    Date refreshTokenDate = tokenDateFormatter.parse(refreshExipreDateTime);
+                    if (refreshTokenDate != null && now.after(tokenDate)){
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("expired", true);
+                        editor.commit();
+                        return true;
+                    } else {
+                        ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), null, sharedPreferences.getString("refresh_token", null), "refresh_token", null);
+
+                        // Set cashed token data using returned code
+                        AsyncExchangeCodeForToken asyncExchangeCodeForToken = new AsyncExchangeCodeForToken();
+                        asyncExchangeCodeForToken.execute(exchangeCode);
+                    }
                 }
             } catch (ParseException e) {
-                e.printStackTrace();
+                // Handle error
             }
             return false;
         } else {
