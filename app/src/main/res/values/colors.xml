@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="primaryButton">#0974a1</color>
+    <color name="primaryButtonHover">#075c80</color>
+    <color name="textColorOnDark">#ffffff</color>
+    <color name="textColorDefault">#212327</color>
+    <color name="seperatorContentInContainer">#e2e3e4</color>
+    <color name="seperatorContainer">#cdcfd2</color>
+    <color name="textLink">#0974a1</color>
+    <color name="disabledButton">#cdcfd2</color>
+</resources>

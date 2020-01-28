@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Constituent</string>
+    <string name="constit_record_text">Loading…</string>
+    <string name="login_button">Login</string>
+    <string name="logout_button">Logout</string>
+    <string name="constit_record_button">Open Constituent Record</string>
+    <string name="title_activity_login">Login</string>
+    <string name="record_not_found">Record not found</string>
+    <string name="no_address">No address on file</string>
+    <string name="no_phone">No phone number on file</string>
+    <string name="welcome_text">Welcome to Blackbaud Constituent View</string>
+    <string name="instuctions_title">Ask Google to show you a constituent</string>
+    <string name="instuctions_body">To look up a constituent say \"OK Google, open constituent\" followed by their name. You can can also say or enter their name below.</string>
+    <string name="search_button">Search</string>
+    <string name="constit_search_input_hint">Search for a contituent</string>
+    <string name="click_to_open_app">Click to open app</string>
+
+    <!--
+    Application constants
+    You need to fill these in with your own information
+    -->
+    <string name="subscriptionKey"></string>
+    <string name="clientId"></string>
+    <string name="redirectUri"></string>
+    <string name="clientSecret"></string>
+    <string name="authorization"></string>
+
+</resources>
