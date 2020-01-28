@@ -14,20 +14,34 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blackbaud.constitview.models.ExchangeCode;
+import com.blackbaud.constitview.services.AsyncExchangeCodeForToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import info.androidhive.fontawesome.FontTextView;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ConstitRecord extends AppCompatActivity {
 
@@ -91,13 +105,6 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    // Parse the response from the auth SPA and turn it into a json style string
-    public static String paramJson(String paramIn) {
-        paramIn = paramIn.replaceAll("=", "\":\"");
-        paramIn = paramIn.replaceAll("&", "\",\"");
-        return "{\"" + paramIn + "\"}";
-    }
-
     // Get an access token from SKY API
     private void handleIntent(Intent intent) {
         if (intent != null){
@@ -109,7 +116,13 @@ public class ConstitRecord extends AppCompatActivity {
                     try {
                         // Create a json object out of the response from the auth SPA
                         JSONObject json = new JSONObject(paramJson(response));
-                        setCachedData(json);
+                        String accessCode = json.getString("code");
+
+                        ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), accessCode);
+
+                        // Set cashed token data using returned code
+                        AsyncExchangeCodeForToken asyncExchangeCodeForToken = new AsyncExchangeCodeForToken();
+                        asyncExchangeCodeForToken.execute(exchangeCode);
                     } catch (JSONException e) {
                         // Handle error
                     }
@@ -118,27 +131,11 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    // Get, clean up, and store token info
-    @SuppressLint("ApplySharedPref")
-    private void setCachedData(JSONObject json) {
-        try {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-
-            // Get date response into a Java parsable date string and store
-            String tokenExpiration = json.getString("expires");
-            String tokenDate = tokenExpiration.split("T")[0];
-            String tokenTime = tokenExpiration.split("T")[1];
-            String expires = tokenDate + " " + tokenTime;
-            editor.putString("expires", expires);
-
-            // Store current token
-            bearerToken = "Bearer " + json.getString("access_token");
-            editor.putString("bearerToken", bearerToken);
-
-            editor.commit();
-        } catch (JSONException e) {
-            // Handle error
-        }
+    // Parse the response from the auth SPA and turn it into a json style string
+    private static String paramJson(String paramIn) {
+        paramIn = paramIn.replaceAll("=", "\":\"");
+        paramIn = paramIn.replaceAll("&", "\",\"");
+        return "{\"" + paramIn + "\"}";
     }
 
     private void updateRecordImage(String constitId) {

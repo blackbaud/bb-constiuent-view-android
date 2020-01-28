@@ -38,7 +38,7 @@
             android:name=".ConstitRecord"
             android:autoVerify="true"
             tools:targetApi="m">
-            <tools:validation testUrl="https://host.nxt.blackbaud.com/app-redirect/redirect-stevenandroidassistant/android-deeplink" />
+            <tools:validation testUrl="https://host.nxt.blackbaud.com/app-redirect/redirect-androiddemo/android-deeplink" />
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -48,7 +48,7 @@
 
                 <data
                     android:host="host.nxt.blackbaud.com"
-                    android:path="/app-redirect/redirect-stevenandroidassistant/android-deeplink"
+                    android:path="/app-redirect/redirect-androiddemo/android-deeplink"
                     android:scheme="https" />
             </intent-filter>
         </activity>
