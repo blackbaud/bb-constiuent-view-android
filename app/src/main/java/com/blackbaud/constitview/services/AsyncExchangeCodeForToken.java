@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
+import com.blackbaud.constitview.R;
 import com.blackbaud.constitview.models.ExchangeCode;
 
 import org.json.JSONException;
@@ -33,13 +34,10 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
 
     @Override
     protected String doInBackground(ExchangeCode... params) {
-        Context context = params[0].getContext();
-        String code = params[0].getCode();
-        String refreshToken = params[0].getRefreshToken();
-        String grantType = params[0].getGrantType();
-        String redirectUri = params[0].getRedirectUri();
+        ExchangeCode exchangeCode = params[0];
+        String authorization  = "Basic " + exchangeCode.getContext().getResources().getString(R.string.authorization);
 
-        sharedPreferences = context.getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
+        sharedPreferences = exchangeCode.getContext().getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
         try {
             OkHttpClient client = new OkHttpClient();
@@ -47,24 +45,26 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
             Response response = null;
 
             // Exchange auth code for access token
-            if (refreshToken == null) {
-                RequestBody body = RequestBody.create(mediaType, "grant_type=" + grantType  + "&redirect_uri=" + redirectUri + "&code=" + code);
+            if (exchangeCode.getRefreshToken() == null) {
+                RequestBody body = RequestBody.create(
+                        mediaType,
+                        "grant_type=" + exchangeCode.getGrantType()  + "&redirect_uri=" + exchangeCode.getRedirectUri() + "&code=" + exchangeCode.getCode());
                 Request request = new Request.Builder()
                         .url("https://oauth2.sky.blackbaud.com/token")
                         .post(body)
-                        .addHeader("Authorization", "Basic Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9")
+                        .addHeader("Authorization", authorization)
                         .addHeader("Content-Type", "application/x-www-form-urlencoded")
                         .build();
                 response = client.newCall(request).execute();
             }
 
             // Exchange refresh token for access token
-            if (refreshToken != null) {
-                RequestBody body = RequestBody.create(mediaType, "grant_type=" + grantType  + "&refresh_token=" + refreshToken);
+            if (exchangeCode.getRefreshToken() != null) {
+                RequestBody body = RequestBody.create(mediaType, "grant_type=" + exchangeCode.getGrantType()  + "&refresh_token=" + exchangeCode.getRefreshToken());
                 Request request = new Request.Builder()
                         .url("https://oauth2.sky.blackbaud.com/token")
                         .post(body)
-                        .addHeader("Authorization", "Basic Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9")
+                        .addHeader("Authorization", authorization)
                         .addHeader("Content-Type", "application/x-www-form-urlencoded")
                         .build();
                 response = client.newCall(request).execute();
@@ -80,6 +80,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
         return responseText;
     }
 
+    // Update all of the cached keys and expiration date/times
     @Override
     @SuppressLint("SimpleDateFormat")
     protected void onPostExecute(String result) {

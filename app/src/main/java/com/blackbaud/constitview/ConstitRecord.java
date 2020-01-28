@@ -31,15 +31,6 @@ public class ConstitRecord extends AppCompatActivity {
 
     private String bearerToken = null;
 
-    // Debug log tag.
-    private static final String TAG_HTTP_URL_CONNECTION = "HTTP_URL_CONNECTION";
-
-    // Child thread sent message type value to activity main thread Handler.
-    private static final int REQUEST_CODE_SHOW_RESPONSE_TEXT = 1;
-
-    // The key of message stored server returned data.
-    private static final String KEY_RESPONSE_TEXT = "KEY_RESPONSE_TEXT";
-
     private ImageView profileImage;
     private TextView nameText;
     private TextView addressText;
@@ -111,13 +102,30 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    // Parse the response from the auth SPA and turn it into a json style string
-    private static String paramJson(String paramIn) {
-        paramIn = paramIn.replaceAll("=", "\":\"");
-        paramIn = paramIn.replaceAll("&", "\",\"");
-        return "{\"" + paramIn + "\"}";
+    // Get the constituent's ID from SKY API usin the searched text
+    private String getConstitId(String constit) {
+        AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
+        try {
+            String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit, bearerToken, subscriptionKey).get();
+            if (responseText != null) {
+                try {
+                    JSONObject json = new JSONObject(responseText);
+                    JSONArray responseList = json.getJSONArray("value");
+                    String firstConstit = responseList.get(0).toString();
+                    JSONObject firstConstitJson = new JSONObject(firstConstit);
+                    return firstConstitJson.getString("id");
+
+                } catch (JSONException e) {
+                    // Handle error
+                }
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            // Handle error
+        }
+        return null;
     }
 
+    // Get the image associated to the Constituent's record from SKY API
     private void updateRecordImage(String constitId) {
         AsyncSkyApiGet asyncUpdateConstitImage = new AsyncSkyApiGet();
         String responseText = null;
@@ -147,28 +155,7 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    private String getConstitId(String constit) {
-        AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
-        try {
-            String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit, bearerToken, subscriptionKey).get();
-            if (responseText != null) {
-                try {
-                    JSONObject json = new JSONObject(responseText);
-                    JSONArray responseList = json.getJSONArray("value");
-                    String firstConstit = responseList.get(0).toString();
-                    JSONObject firstConstitJson = new JSONObject(firstConstit);
-                    return firstConstitJson.getString("id");
-
-                } catch (JSONException e) {
-                    // Handle error
-                }
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            // Handle error
-        }
-        return null;
-    }
-
+    // Get the address and phone number associated to the Constituent's record from SKY API
     @SuppressLint("ApplySharedPref")
     private void updateRecordText(String constitId) {
         AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
@@ -218,5 +205,12 @@ public class ConstitRecord extends AppCompatActivity {
         } catch (ExecutionException | InterruptedException e) {
             // Handle error
         }
+    }
+
+    // Parse the response from the auth SPA and turn it into a json style string
+    private static String paramJson(String paramIn) {
+        paramIn = paramIn.replaceAll("=", "\":\"");
+        paramIn = paramIn.replaceAll("&", "\",\"");
+        return "{\"" + paramIn + "\"}";
     }
 }

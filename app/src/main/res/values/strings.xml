@@ -22,5 +22,6 @@
     <string name="redirectUri">https://host.nxt.blackbaud.com/app-redirect/redirect-androiddemo/</string>
     <!-- Provided when registering your application -->
     <string name="clientSecret">XY/eVmYR0m0tL/MFwAbc/Gnn/u1StlB1HpwIqBoz4L8=</string>
+    <string name="authorization">Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9</string>
 
 </resources>
