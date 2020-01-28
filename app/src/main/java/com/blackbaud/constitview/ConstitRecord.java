@@ -5,44 +5,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blackbaud.constitview.models.ExchangeCode;
+import com.blackbaud.constitview.services.AsyncConvertImageToBitmap;
 import com.blackbaud.constitview.services.AsyncExchangeCodeForToken;
-import com.blackbaud.constitview.services.AsyncGet;
+import com.blackbaud.constitview.services.AsyncSkyApiGet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Base64;
-import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import info.androidhive.fontawesome.FontTextView;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class ConstitRecord extends AppCompatActivity {
 
@@ -67,7 +47,6 @@ public class ConstitRecord extends AppCompatActivity {
     private FontTextView addressPinIcon;
     private FontTextView phoneIcon;
 
-    private SharedPreferences sharedPreferences;
     private SharedPreferences constitRecordCache;
 
     @Override
@@ -85,7 +64,7 @@ public class ConstitRecord extends AppCompatActivity {
         addressPinIcon = findViewById(R.id.mapIcon);
         phoneIcon = findViewById(R.id.phoneIcon);
 
-        sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
         constitRecordCache = getSharedPreferences("ConstitRecordCache", Context.MODE_PRIVATE);
         bearerToken = sharedPreferences.getString("bearerToken", null);
 
@@ -140,12 +119,36 @@ public class ConstitRecord extends AppCompatActivity {
     }
 
     private void updateRecordImage(String constitId) {
-        AsyncUpdateConstitImage asyncUpdateConstitImage = new AsyncUpdateConstitImage();
-        asyncUpdateConstitImage.execute(skyApiUrl + constitId + "/profilepicture");
+        AsyncSkyApiGet asyncUpdateConstitImage = new AsyncSkyApiGet();
+        String responseText = null;
+        try {
+            responseText = asyncUpdateConstitImage.execute(skyApiUrl + constitId + "/profilepicture", bearerToken, subscriptionKey).get();
+        } catch (ExecutionException | InterruptedException e) {
+            // Handle error
+        }
+        if (responseText != null) {
+            JSONObject json = null;
+            try {
+                json = new JSONObject(responseText);
+            } catch (JSONException e) {
+                // Handle error
+            }
+            if (json != null && json.length() > 0) {
+                AsyncConvertImageToBitmap updateImageAsync = new AsyncConvertImageToBitmap();
+                try {
+                    Bitmap bitmap = updateImageAsync.execute(responseText).get();
+                    profileImage.setImageBitmap(bitmap);
+                } catch (ExecutionException | InterruptedException e) {
+                    // Handle error
+                }
+            } else {
+                profileImage.setImageResource(R.drawable.ic_genericprofileimageicon);
+            }
+        }
     }
 
     private String getConstitId(String constit) {
-        AsyncGet asyncgetCall = new AsyncGet();
+        AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
         try {
             String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit, bearerToken, subscriptionKey).get();
             if (responseText != null) {
@@ -168,7 +171,7 @@ public class ConstitRecord extends AppCompatActivity {
 
     @SuppressLint("ApplySharedPref")
     private void updateRecordText(String constitId) {
-        AsyncGet asyncgetCall = new AsyncGet();
+        AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
         try {
             String responseText = asyncgetCall.execute(skyApiUrl + constitId, bearerToken, subscriptionKey).get();
             if (responseText != null) {
@@ -214,156 +217,6 @@ public class ConstitRecord extends AppCompatActivity {
             editor.commit();
         } catch (ExecutionException | InterruptedException e) {
             // Handle error
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class AsyncUpdateConstitImage extends AsyncTask<String, String, String> {
-
-        private String responseText = null;
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String reqUrl = strings[0];
-
-            // Maintain http url connection.
-            HttpURLConnection httpConn = null;
-
-            // Read text input stream.
-            InputStreamReader isReader = null;
-
-            // Read text into buffer.
-            BufferedReader bufReader = null;
-
-            // Save server response text.
-            StringBuilder readTextBuf = new StringBuilder();
-
-            try {
-                // Create a URL object use page url.
-                URL url = new URL(reqUrl);
-
-                // Open http connection to web server.
-                httpConn = (HttpURLConnection)url.openConnection();
-
-                // Headers
-                httpConn.setRequestProperty("Authorization", bearerToken);
-                httpConn.setRequestProperty("Bb-Api-Subscription-Key", subscriptionKey);
-
-                // Set http request method to get.
-                httpConn.setRequestMethod("GET");
-
-                // Set connection timeout and read timeout value.
-                httpConn.setConnectTimeout(10000);
-                httpConn.setReadTimeout(10000);
-
-                // Get input stream from web url connection.
-                InputStream inputStream = httpConn.getInputStream();
-
-                // Create input stream reader based on url connection input stream.
-                isReader = new InputStreamReader(inputStream);
-
-                // Create buffered reader.
-                bufReader = new BufferedReader(isReader);
-
-                // Read line of text from server response.
-                String line = bufReader.readLine();
-
-                // Loop while return line is not null.
-                while(line != null)
-                {
-                    // Append the text to string buffer.
-                    readTextBuf.append(line);
-
-                    // Continue to read text line.
-                    line = bufReader.readLine();
-                }
-
-                // Send message to main thread to update response text in TextView after read all.
-                Message message = new Message();
-
-                // Set message type.
-                message.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
-
-                // Create a bundle object.
-                Bundle bundle = new Bundle();
-                // Put response text in the bundle with the special key.
-                bundle.putString(KEY_RESPONSE_TEXT, readTextBuf.toString());
-                // Set bundle data in message.
-                message.setData(bundle);
-                // Send message to main thread Handler to process.
-                if(message.what == REQUEST_CODE_SHOW_RESPONSE_TEXT)
-                {
-                    Bundle msgBundle = message.getData();
-                    if(msgBundle != null)
-                    {
-                        responseText = bundle.getString(KEY_RESPONSE_TEXT);
-
-                    }
-                }
-                httpConn.disconnect();
-            } catch(IOException ex)
-            {
-                Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-            } finally {
-                try {
-                    if (bufReader != null) {
-                        bufReader.close();
-                    }
-
-                    if (isReader != null) {
-                        isReader.close();
-                    }
-
-                    if (httpConn != null) {
-                        httpConn.disconnect();
-                    }
-                } catch (IOException ex) {
-                    Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
-                }
-            }
-
-            return responseText;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPreExecute();
-            ImageView profileImage = findViewById(R.id.profileImage);
-            if (responseText != null) {
-                JSONObject json = null;
-                try {
-                    json = new JSONObject(responseText);
-                } catch (JSONException e) {
-                    // Handle error
-                }
-                if (json != null && json.length() > 0) {
-                    UpdateImageAsync updateImageAsync = new UpdateImageAsync();
-                    try {
-                        Bitmap bitmap = updateImageAsync.execute(responseText).get();
-                        profileImage.setImageBitmap(bitmap);
-                    } catch (ExecutionException | InterruptedException e) {
-                        // Handle error
-                    }
-                } else {
-                    profileImage.setImageResource(R.drawable.ic_genericprofileimageicon);
-                }
-            }
-        }
-
-        @SuppressLint("StaticFieldLeak")
-        private class UpdateImageAsync extends AsyncTask<String, String, Bitmap> {
-
-            @Override
-            protected Bitmap doInBackground(String... strings) {
-                try {
-                    // Get image URL
-                    JSONObject json = new JSONObject(responseText);
-                    return BitmapFactory.decodeStream((InputStream)new URL(json.getString("url")).getContent());
-                } catch (JSONException | IOException e) {
-                    // Handle error
-                }
-                return null;
-            }
         }
     }
 }

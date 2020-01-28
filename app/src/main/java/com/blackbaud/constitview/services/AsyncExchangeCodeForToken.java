@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.blackbaud.constitview.models.ExchangeCode;
 
