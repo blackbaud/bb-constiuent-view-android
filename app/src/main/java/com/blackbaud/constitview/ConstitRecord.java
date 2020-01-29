@@ -19,6 +19,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -89,7 +92,7 @@ public class ConstitRecord extends AppCompatActivity {
                         JSONObject json = new JSONObject(paramJson(response));
                         String accessCode = json.getString("code");
 
-                        ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), accessCode, null, "authorization_code", "https%3A%2F%2Fhost.nxt.blackbaud.com%2Fapp-redirect%2Fredirect-androiddemo%2F&code=");
+                        ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), accessCode, null, "authorization_code", getResources().getString(R.string.redirectUri));
 
                         // Set cashed token data using returned code
                         AsyncExchangeCodeForToken asyncExchangeCodeForToken = new AsyncExchangeCodeForToken();
@@ -102,11 +105,16 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    // Get the constituent's ID from SKY API usin the searched text
+    // Get the constituent's ID from SKY API using the searched text
     private String getConstitId(String constit) {
         AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
         try {
-            String responseText = asyncgetCall.execute(skyApiUrl + "search?search_text=" + constit, bearerToken, subscriptionKey).get();
+
+            String responseText = asyncgetCall.execute(
+                    skyApiUrl + "search?search_text=" + URLEncoder.encode(constit, StandardCharsets.UTF_8.toString()),
+                    bearerToken,
+                    subscriptionKey).get();
+
             if (responseText != null) {
                 try {
                     JSONObject json = new JSONObject(responseText);
@@ -119,7 +127,7 @@ public class ConstitRecord extends AppCompatActivity {
                     // Handle error
                 }
             }
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException | UnsupportedEncodingException e) {
             // Handle error
         }
         return null;
@@ -135,23 +143,15 @@ public class ConstitRecord extends AppCompatActivity {
             // Handle error
         }
         if (responseText != null) {
-            JSONObject json = null;
+            AsyncConvertImageToBitmap updateImageAsync = new AsyncConvertImageToBitmap();
             try {
-                json = new JSONObject(responseText);
-            } catch (JSONException e) {
+                Bitmap bitmap = updateImageAsync.execute(responseText).get();
+                profileImage.setImageBitmap(bitmap);
+            } catch (ExecutionException | InterruptedException e) {
                 // Handle error
             }
-            if (json != null && json.length() > 0) {
-                AsyncConvertImageToBitmap updateImageAsync = new AsyncConvertImageToBitmap();
-                try {
-                    Bitmap bitmap = updateImageAsync.execute(responseText).get();
-                    profileImage.setImageBitmap(bitmap);
-                } catch (ExecutionException | InterruptedException e) {
-                    // Handle error
-                }
-            } else {
-                profileImage.setImageResource(R.drawable.ic_genericprofileimageicon);
-            }
+        } else {
+            profileImage.setImageResource(R.drawable.ic_genericprofileimageicon);
         }
     }
 

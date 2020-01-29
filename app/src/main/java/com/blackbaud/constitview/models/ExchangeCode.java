@@ -27,3 +27,4 @@ public class ExchangeCode {
 
     public String getRedirectUri() { return this.redirectUri; }
 }
+
