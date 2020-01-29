@@ -10,7 +10,7 @@
     <string name="no_phone">No phone number on file</string>
     <string name="welcome_text">Welcome to Blackbaud Constituent View</string>
     <string name="instuctions_title">Ask Google to show you a constituent</string>
-    <string name="instuctions_body">To look up a constituent say \"OK Google, open constituent\" followed by their name. You can also say or enter their name below.</string>
+    <string name="instuctions_body">To look up a constituent say \"OK Google, open constituent\" followed by their name. You can can also say or enter their name below.</string>
     <string name="search_button">Search</string>
     <string name="constit_search_input_hint">Search for a contituent</string>
     <string name="click_to_open_app">Click to open app</string>
@@ -19,11 +19,10 @@
     Application constants
     You need to fill these in with your own information
     -->
-    <string name="subscriptionKey"></string>
-    <string name="clientId"></string>
-    <string name="redirectUri"></string>
-    <string name="clientSecret"></string>
-    <string name="authorization"></string>
+    <string name="subscriptionKey">f6b4ed3cc9ef41d19195cb3f7ac49b45</string>
+    <string name="clientId">385f895f-b284-4dc9-af8a-0c1260b3e3f2</string>
+    <string name="redirectUri">https://host.nxt.blackbaud.com/app-redirect/redirect-androiddemo/</string>
+    <string name="clientSecret">XY/eVmYR0m0tL/MFwAbc/Gnn/u1StlB1HpwIqBoz4L8=</string>
+    <string name="authorization">Mzg1Zjg5NWYtYjI4NC00ZGM5LWFmOGEtMGMxMjYwYjNlM2YyOlhZL2VWbVlSMG0wdEwvTUZ3QWJjL0dubi91MVN0bEIxSHB3SXFCb3o0TDg9</string>
 
 </resources>
-
