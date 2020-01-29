@@ -10,7 +10,7 @@
     <string name="no_phone">No phone number on file</string>
     <string name="welcome_text">Welcome to Blackbaud Constituent View</string>
     <string name="instuctions_title">Ask Google to show you a constituent</string>
-    <string name="instuctions_body">To look up a constituent say \"OK Google, open constituent\" followed by their name. You can can also say or enter their name below.</string>
+    <string name="instuctions_body">To look up a constituent say \"OK Google, open constituent\" followed by their name. You can also say or enter their name below.</string>
     <string name="search_button">Search</string>
     <string name="constit_search_input_hint">Search for a contituent</string>
     <string name="click_to_open_app">Click to open app</string>
