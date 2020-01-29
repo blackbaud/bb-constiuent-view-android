@@ -102,7 +102,7 @@ public class ConstitRecord extends AppCompatActivity {
         }
     }
 
-    // Get the constituent's ID from SKY API usin the searched text
+    // Get the constituent's ID from SKY API using the searched text
     private String getConstitId(String constit) {
         AsyncSkyApiGet asyncgetCall = new AsyncSkyApiGet();
         try {
