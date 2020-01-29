@@ -20,7 +20,9 @@ public class AsyncConvertImageToBitmap extends AsyncTask<String, String, Bitmap>
         try {
             // Get image URL
             JSONObject json = new JSONObject(strings[0]);
-            return BitmapFactory.decodeStream((InputStream)new URL(json.getString("url")).getContent());
+            if (json.length() > 0) {
+                return BitmapFactory.decodeStream((InputStream) new URL(json.getString("url")).getContent());
+            }
         } catch (JSONException | IOException e) {
             // Handle error
         }
