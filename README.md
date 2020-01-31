@@ -6,7 +6,7 @@ what is currently possible.
 
 This is a native Androud application written in Java and tested on API 28.
 
-Author: [Steven Draugek](https://github.com/sdraugel)
+Author: [Steven Draugel](https://github.com/sdraugel)
 
 ## What it has/does
 

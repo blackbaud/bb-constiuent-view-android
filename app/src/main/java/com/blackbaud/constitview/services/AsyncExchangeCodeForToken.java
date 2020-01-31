@@ -101,7 +101,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
                         Calendar calendar = Calendar.getInstance();
                         assert date != null;
                         calendar.setTime(date);
-                        calendar.add(Calendar.MINUTE, Integer.parseInt(json.getString("expires_in")));
+                        calendar.add(Calendar.MINUTE, Integer.parseInt(json.getString("expires_in"))/60);
 
                         // Store refresh token expiration date
                         // editor.putString("refreshTokenExpiration", refreshTokenExipration);
