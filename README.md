@@ -1,4 +1,4 @@
-# bb-constiuent-view-android
+# bb-constituent-view-android
 
 This repository contains the code for an app that demonstrates how to use the Android
 Assistant with Blackbaud SKY. This is exploratory and I encountered some limitations with
@@ -15,9 +15,9 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 1. Blackbaud OAuth login/logout, refreshes the token when expired.
 1. Includes some [SKY UX](https://developer.blackbaud.com/skyux/) styling so the app look matches the site users are familiar with, and follows Blackbaud style guidelines.
 
-[![](/Screenshots/InAppConstitView.png)](./Screenshots/InAppConstitView.png)
-[![](/Screenshots/MainActivity.png)](./Screenshots/MainActivity.png)
-[![](/Screenshots/SliceView.png)](./Screenshots/SliceView.png)
+[![](./Screenshots/InAppConstitView.png)](./Screenshots/InAppConstitView500h.png)
+[![](./Screenshots/MainActivity.png)](./Screenshots/MainActivity500h.png)
+[![](./Screenshots/SliceView.png)](./Screenshots/SliceView500h.png)
 
 ### Included unused code
 
