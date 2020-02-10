@@ -15,9 +15,9 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 1. Blackbaud OAuth login/logout, refreshes the token when expired.
 1. Includes some [SKY UX](https://developer.blackbaud.com/skyux/) styling so the app look matches the site users are familiar with, and follows Blackbaud style guidelines.
 
-[![](./Screenshots/InAppConstitView.png)](./Screenshots/InAppConstitView500h.png)
-[![](./Screenshots/MainActivity.png)](./Screenshots/MainActivity500h.png)
-[![](./Screenshots/SliceView.png)](./Screenshots/SliceView500h.png)
+[![](./Screenshots/InAppConstitView500h.png)](./Screenshots/InAppConstitView.png)
+[![](./Screenshots/MainActivity500h.png)](./Screenshots/MainActivity.png)
+[![](./Screenshots/SliceView500h.png)](./Screenshots/SliceView.png)
 
 ### Included unused code
 
