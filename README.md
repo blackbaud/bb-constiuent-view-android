@@ -10,9 +10,8 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 
 ## What it has/does
 
-1. Adds a Android Assistant intent to look up a constituent by name - this displays a small popup with the profile picture, display name, and lookup ID.
-1. Adds a slice viewer that will integrate with the Google app when supported.
-1. Blackbaud OAuth login/logout, refreshes the token when expired.
+1. Adds an Android Assistant intent to look up a constituent by name - this displays a view with the profile picture, display name, address and phone number.
+1. Implements Blackbaud OAuth to login, logout, and refresh the access token when expired.
 1. Includes some [SKY UX](https://developer.blackbaud.com/skyux/) styling so the app look matches the site users are familiar with, and follows Blackbaud style guidelines.
 
 [![](./Screenshots/MainActivity500h.png)](./Screenshots/MainActivity.png)
@@ -21,132 +20,25 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 
 ### Included unused code
 
-I experimented with other available iOS functionality and found that the implementation
-of these pieces did not work well with our application, but I are including the code
-as it may be useful to others.
+I experimented with other available Android functionality and found that the implementation
+of these pieces either did not work well or were still in developer preview.
 
-#### `SendMessageIntent` - "Send Message" customized system intent
+#### `ConstiuentSliceProvider` - Android deeplink intent
 
-I wanted to be able to look up constituent contact information using SKY API and
-use the normal "send message" voice commands to send a message to the constituent.
-That is the opposite of what this system intent does - this intent allows the user
-to look up a contact from the phone contacts only and then uses this app to send
-the message. The "start call" system intents behave the same.
-
-#### `CreateNoteIntent` - "Create Note" customized system intent and `AddTasksIntent` -
-"Add Tasks" customized system intent
-
-I was hoping this would be an easy way to add a note or upcoming action to a constituent record.
-This code is functional but there is no way to customize what Siri asks for so you
-have to use the constituent name when Siri asks "what folder" the note belongs in.
-I was able to make a custom intent that behaves the same but allows us to change
-what Siri asks for, so she will ask for the constituent name rather than the folder
-name.
-
-#### `GetVisualCodeIntent` - "Get Visual Code" customized system intent
-
-For those unfamiliar with this intent, it is supposed to display a QR code. We
-thought this might be a good way to display something like a vCard
-with constituent information, a direct link to a donation form, a direct link to
-an event registration, or something similar. I was not able to get the QR code
-to actually appear, and believe this may be an iOS bug. However, even if it did work,
-the implementation does not support those things I was hoping for. It seems that you
-can only create one QR code for an app and there are no parameters, so I couldn't
-say something like "Hey Siri, give me a QR code for the upcoming gala", or "Hey Siri,
-give me a QR code with Robert Hernandez's contact info". However, there's no reason
-that a custom intent couldn't be written to do exactly that.
-
-#### vCard / Virtual Contact File (VCF)
-
-There is some code that is a start to creating a constituent vCard in the handler
-for the `GetVisualCodeIntent`.
+I created a slice view that will integrate with the Google app, when no longer in developer preview.
+This will allow a developer to display content directly in the Google app without the need for internet connectivity.
 
 ## Limitations found
 
-These limitations exist as of iOS 13.2.3 and may change in the future.
+These limitations exist as of Android 10 (API Level 29) and may change in the future.
 
-### Apple Watch
+### Built in intent actions.intent.OPEN_APP_FEATURE
 
-Q: Can I tell my watch "Show me Robert Hernandez" and get a small popup with a
-headshot and the most important pieces of info? Use case - I'm at a gala and I think
-an MVP donor just walked in; I want to make sure it's him and brush up on his
-wife's name.
+Q: Can I open a view from an installed app using the generic built in actions.intent.OPEN_APP_FEATURE intent
 
-A: No. "watchOS doesn’t support Intents UI app extensions" ([Source](https://developer.apple.com/documentation/sirikit/creating_an_intents_ui_extension))
+A: No. There is currently a bug preventing this. ([Source](https://issuetracker.google.com/issues/135714718))
 
-As a workaround, we could do a push notification which would show up on watch,
-then create a watch app where clicking the push notification would open a little
-page with most important info. As I am 90% sure this is achievable, I did not
-implement this for this demo.
-
-### Dictate a contact report
-
-I was able to create a custom Siri Shortcut in the Shortcuts app [manually](./Screenshots/DictateContactReportShortcut.png) that
-did the full conversation I wanted in order to have the ideal interaction. I cannot
-add this to Siri using our app. The only way to add a custom shortcut
-like the one I made is for Blackbaud to publish the shortcut and us to
-provide information to the users on how to install an untrusted shortcut, which is
-not a simple process and could lead to security issues for non-technical users.
-An example of shortcuts published in this way can be found
-<a href="https://www.matthewcassinelli.com/ios-13-siri-shortcuts-library/" target="_blank">here</a>.
-
-The functionality I was able to complete was to dictate a contact report in the app,
-and then donate an interaction for dictating that is very simple. I found some issues with this:
-
-* To dictate within the app, you can't just trigger a Siri intent, so I had to recreate the entire Siri interaction
-* The default voice is not Siri's voice and sounds more like a robot. Unsure if I can get it to use Siri's voice.
-* The dictation of the report stops when the user pauses and does not provide a simple way to ask if the user is done
-* The donated intent does not allow you to choose "Ask Every Time" as a default so you have to pre-fill the constituent - it's unlikely someone is going to be want to add a shortcut for filing a contact report for the same constituent over and over. The user can edit this themselves but it is two clicks to even see that field.
-* While the constituent lookup ID carried over to the donated intent, the recorded text did not, and I'm not sure why
-* The voice recognition is not great and misheard me often
-
-### Customized System Intents
-
-None of the system intents available worked the way I wanted and the ones that could
-be hacked to do what I wanted worked better when done as a fully custom intent. That
-being said, as far as I can tell there is no benefit to using a system intent besides
-that it means you don't have to build out the custom intent details yourself.
-See the "Included unused code" section for more information.
-
-### Voice interaction for finding a constituent
-
-You cannot say "Hey Siri, show me Robert Hernandez". You have
-to first trigger the shortcut like "Hey Siri, Find a constituent" and then wait
-for Siri to ask who you're looking for. This is true unless you create
-a shortcut for finding a specific person, where the lookup ID and/or name is pre-filled.
-
-### Inability to default shortcut values
-
-I cannot specify the constituent search text default value to be "Ask Each Time" when
-adding the shortcut from within the app. I can only set it to a specific string or
-leave it blank. This is why I added the instructions to "Specify a constituent's
-name or 'Ask Each Time' by clicking 'Look up constituent' on the popup."
-
-You can see what I mean by watching the [demo video](./Screenshots/SiriDemo-FindAConstituent.mov).
-
-### Siri modal can't do anything complex
-
-When using the "Find a constituent" shortcut, the only thing that can happen when
-you click anywhere in the constituent preview from Siri is to open the app, and I can't detect
-what was clicked apart from the constituent itself. If we wanted to do something
-like let the user open directions to the address, we'd have to show the address
-within the app and make that a link. This means that a) it is multiple clicks to
-do something and b) it cannot be voice-only to call/text/map me to my constituent.
-
-A workaround would be to add a shortcut for each thing that the user may want to do.
-For example, add a shortcut that does the following "Hey Siri, ask Blackbaud to
-map me to a constituent" "What is the name of the constituent?" "Robert Hernandez".
-This shortcut would automatically open Apple Maps and navigate to the constituent address.
-
-### Siri doesn't understand
-
-I found that sometimes, even though I had a Siri Shortcut named exactly what I was
-saying, Siri still gave suggestions unrelated to the app. For example, sometimes
-when I say "Find a contact report", she will give me web results about filing reports
-with government organizations. Maybe this is just a problem for developers and
-there is some sort of logic in place to try something else if you keep asking the
-same thing over and over again. I think the only way to determine if that's true is
-to use the app like someone would normally use an app over a longer period of time.
+As a workaround, I created a node.js service and a custom intent that talks directly to SKY API. ([Source](Github link here))
 
 ### SKY API - server required
 
@@ -158,21 +50,21 @@ calls to your server and your server should make the calls to SKY API using the 
 ## Additions wanted (contributions welcome)
 
 1. Cover all reasonable SKY UX styling
-1. Turn SKY UX styling into a Framework so other iOS apps can reuse the code
-1. Turn SKY API into a Framework so other iOS apps can reuse the code - ideally would autogenerate this from the SKY API swagger
+1. Turn SKY UX styling into a Framework so other Android apps can reuse the code
+1. Turn SKY API into a Framework so other Android apps can reuse the code - ideally would autogenerate this from the SKY API swagger
 1. Unit tests
 1. Localization
 1. Accessibility
-1. Proper UI for "find a constituent" - allow finding within the app and then donate the shortcut, rather than just having the Add to Siri button
-1. Do something when "find a constituent" modal is clicked (show constituent page with useful buttons)
-1. Do something after using `FileContactReportIntent` - right now just displays a blank page, maybe should open to the action
-1. Complete all TODOs
+1. Proper UI for "find a constituent" - allow finding within the app
 
 ### Further exploration/nice-to-have features
 
-1. Custom intent to show a QR code containing a vCard for a constituent
-1. Apple Watch app and push notifications to support Apple Watch functionality mentioned above
+1. Integration with the Google app
 1. Dark mode
+
+~~~ 
+TODO: Pickup here 
+~~~
 
 ## Getting started
 
