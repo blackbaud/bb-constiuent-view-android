@@ -16,11 +16,11 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 1. Includes some [SKY UX](https://developer.blackbaud.com/skyux/) styling so the app look matches the site users are familiar with, and follows Blackbaud style guidelines.
 
 [![](./Screenshots/MainActivity500h.png)](./Screenshots/MainActivity.png)  
-*Login Screen with built in constituent search*
+*Login Screen with built in constituent search*  
 [![](./Screenshots/InAppConstitView500h.png)](./Screenshots/InAppConstitView.png)  
-*Activity view example with links to Google Maps and the phone application*
+*Activity view example with links to Google Maps and the phone application*  
 [![](./Screenshots/SliceView500h.png)](./Screenshots/SliceView.png)  
-*Slice view. If the slice is touched the activity view will open*
+*Slice view. If the slice is touched the activity view will open*  
 
 ### Included unused code
 
