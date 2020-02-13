@@ -68,7 +68,7 @@ Prerequisites:
 * Android Studio - Recommended IDE
 * Android SDK, at least API 28
 * [Android App Actions Test Tool](https://developers.google.com/assistant/app/test-tool)
-* [Android SLice Viewer](https://developer.android.com/guide/slices/getting-started)
+* [Android Slice Viewer](https://developer.android.com/guide/slices/getting-started)
 * A SKY Developer account with environment access is needed to access data in SKY API
 
 1. Set up your SKY application
@@ -82,7 +82,8 @@ Prerequisites:
     <string name="redirectUri"></string>
     <string name="clientSecret"></string>
     ```
-        * Note that the clientSecret is intended to be kept secret and this value should not be included in a production app
+        * Note that the clientSecret is intended to be kept secret and this value should not be 
+        included in a production app
     1. Add the application to an environment
         1. Go to the home page of environment where you are an environment admin
         1. Go to Control Panel > Applications
@@ -92,7 +93,7 @@ Prerequisites:
 ### Debugging
 To debug the app - Android Studio
 
-1. Select the device you'd like to debug, set breakpoints in any file under the [java directory](./app/src/java), then click debug
+1. Select the device you'd like to debug, set breakpoints in any file under the [java directory](./app/src/main/java/com/blackbaud/constitview), then click debug
     * Note, debugging will degrade performance 
 
 ## Usage
