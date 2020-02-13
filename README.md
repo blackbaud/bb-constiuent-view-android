@@ -15,8 +15,10 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 1. Implements Blackbaud OAuth to login, logout, and refresh the access token when expired.
 1. Includes some [SKY UX](https://developer.blackbaud.com/skyux/) styling so the app look matches the site users are familiar with, and follows Blackbaud style guidelines.
 
-[![](./Screenshots/MainActivity500h.png)](./Screenshots/MainActivity.png)  
-*Login Screen with built in constituent search*  
+<p align="center">
+    <img width="500" src="./Screenshots/MainActivity.png"> 
+    <p>Login Screen with built in constituent search</p>
+</p>
 
 [![](./Screenshots/InAppConstitView500h.png)](./Screenshots/InAppConstitView.png)  
 *Activity view example with links to Google Maps and the phone application*  
