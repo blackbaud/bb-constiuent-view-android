@@ -17,15 +17,15 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 
 <p align="center">
     <img height="500" src="./Screenshots/MainActivity.png"> 
-    <i align="center">
-        Login Screen with built in constituent search
-     </i>
+    <p align="center">
+        <i>Login Screen with built in constituent search</i>
+     </p>
 </p>
 
 <p align="center">
     <img height="500" src="./Screenshots/InAppConstitView.png"> 
     <p align="center">
-        Activity view example with links to Google Maps and the phone application
+        <i>Activity view example with links to Google Maps and the phone application</i>
     </p>
 </p>
 
@@ -33,7 +33,7 @@ Author: [Steven Draugel](https://github.com/sdraugel)
 <p align="center">
     <img height="500" src="./Screenshots/SliceView.png"> 
     <p align="center">
-        Slice view. If the slice is touched the activity view will open
+        <i>Slice view. If the slice is touched the activity view will open</i>
     </p>
 </p> 
 
