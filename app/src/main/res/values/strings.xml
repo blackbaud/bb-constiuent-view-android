@@ -23,8 +23,6 @@
     <string name="clientId"></string>
     <string name="redirectUri"></string>
     <string name="clientSecret"></string>
-
-    <!-- TODO: remove this    -->
-    <string name="authorization"></string>
+    <string name="applicationAuthorization"></string>
 
 </resources>
