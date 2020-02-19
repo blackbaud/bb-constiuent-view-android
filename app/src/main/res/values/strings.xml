@@ -23,6 +23,6 @@
     <string name="clientId"></string>
     <string name="redirectUri"></string>
     <string name="clientSecret"></string>
-    <string name="authorization"></string>
+    <string name="applicationAuthorization"></string>
 
 </resources>

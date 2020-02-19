@@ -35,7 +35,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
     @Override
     protected String doInBackground(ExchangeCode... params) {
         ExchangeCode exchangeCode = params[0];
-        String authorization  = "Basic " + exchangeCode.getContext().getResources().getString(R.string.authorization);
+        String applicationAuthorization  = "Basic " + exchangeCode.getContext().getResources().getString(R.string.applicationAuthorization);
 
         sharedPreferences = exchangeCode.getContext().getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
@@ -52,7 +52,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
                 Request request = new Request.Builder()
                         .url("https://oauth2.sky.blackbaud.com/token")
                         .post(body)
-                        .addHeader("Authorization", authorization)
+                        .addHeader("Authorization", applicationAuthorization)
                         .addHeader("Content-Type", "application/x-www-form-urlencoded")
                         .build();
                 response = client.newCall(request).execute();
@@ -64,7 +64,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
                 Request request = new Request.Builder()
                         .url("https://oauth2.sky.blackbaud.com/token")
                         .post(body)
-                        .addHeader("Authorization", authorization)
+                        .addHeader("Authorization", applicationAuthorization)
                         .addHeader("Content-Type", "application/x-www-form-urlencoded")
                         .build();
                 response = client.newCall(request).execute();
@@ -101,7 +101,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
                         Calendar calendar = Calendar.getInstance();
                         assert date != null;
                         calendar.setTime(date);
-                        calendar.add(Calendar.MINUTE, Integer.parseInt(json.getString("expires_in")));
+                        calendar.add(Calendar.MINUTE, Integer.parseInt(json.getString("expires_in"))/60);
 
                         // Store refresh token expiration date
                         // editor.putString("refreshTokenExpiration", refreshTokenExipration);
