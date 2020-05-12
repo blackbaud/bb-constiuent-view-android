@@ -5,7 +5,6 @@
             <parameter-mapping
                 intentParameter="feature"
                 urlParameter="featureName" />
-
         </fulfillment>
     </action>
 <!--    <action intentName="actions.intent.SHOW_CONSTIT">-->

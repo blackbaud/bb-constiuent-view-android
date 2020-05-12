@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
-        tokenExpired = checkIfTokenExpired();
-
         if (getIntent() != null) {
             handleIntent(getIntent());
         }
@@ -68,12 +66,15 @@ public class MainActivity extends AppCompatActivity {
     private void handleIntent(Intent intent){
         if (intent != null){
             String action = intent.getAction();
+
             // request from assistant
             if (Intent.ACTION_VIEW.equals(action)){
                 goToLogin(intent);
             }
+
             // request from normal application run
             else{
+                tokenExpired = checkIfTokenExpired();
                 boolean loggedIn = !sharedPreferences.getBoolean("expired", false);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if (loggedIn && !tokenExpired){
@@ -197,13 +198,21 @@ public class MainActivity extends AppCompatActivity {
         if (expireDateTime != null) {
             SimpleDateFormat tokenDateFormatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss", Locale.US);
             try {
-                Date tokenDate = tokenDateFormatter.parse(expireDateTime);
+                // access_token's expiration date formatted
+                Date accessTokenExpDate = tokenDateFormatter.parse(expireDateTime);
                 Date now = new Date();
-                if (tokenDate != null && now.after(tokenDate)){
-                    String refreshExipreDateTime = sharedPreferences.getString("refreshTokenExpires", null);
-                    assert refreshExipreDateTime != null;
-                    Date refreshTokenDate = tokenDateFormatter.parse(refreshExipreDateTime);
-                    if (refreshTokenDate != null && now.after(tokenDate)){
+
+                // Has the access_token expired?
+                if (accessTokenExpDate != null && now.after(accessTokenExpDate)){
+                    // Get the refresh_token's expiration date from local storage
+                    String refreshExpDateTime = sharedPreferences.getString("refreshTokenExpires", null);
+                    assert refreshExpDateTime != null;
+
+                    // refresh_token's expiration date formatted
+                    Date refreshTokenExpDate = tokenDateFormatter.parse(refreshExpDateTime);
+
+                    // Has the refresh_token expired?
+                    if (refreshTokenExpDate != null && now.after(refreshTokenExpDate)){
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean("expired", true);
                         editor.commit();
@@ -211,10 +220,12 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         ExchangeCode exchangeCode = new ExchangeCode(this.getApplicationContext(), null, sharedPreferences.getString("refresh_token", null), "refresh_token", null);
 
-                        // Set cashed token data using returned code
+                        // Since the refresh_token hasn't expired, exchange it for a new access_token
                         AsyncExchangeCodeForToken asyncExchangeCodeForToken = new AsyncExchangeCodeForToken();
                         asyncExchangeCodeForToken.execute(exchangeCode);
                     }
+                } else {
+                    return false;
                 }
             } catch (ParseException e) {
                 // Handle error
