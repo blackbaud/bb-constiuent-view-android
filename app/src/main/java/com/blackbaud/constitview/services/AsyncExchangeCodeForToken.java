@@ -35,7 +35,7 @@ public class AsyncExchangeCodeForToken extends AsyncTask<ExchangeCode, String, S
     @Override
     protected String doInBackground(ExchangeCode... params) {
         ExchangeCode exchangeCode = params[0];
-        String authorization  = "Basic " + exchangeCode.getContext().getResources().getString(R.string.authorization);
+        String authorization  = "Basic " + exchangeCode.getContext().getResources().getString(R.string.applicationAuthorization);
 
         sharedPreferences = exchangeCode.getContext().getSharedPreferences("TokenCache", Context.MODE_PRIVATE);
 
